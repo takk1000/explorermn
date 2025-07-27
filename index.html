@@ -6,7 +6,7 @@
     <meta name="description" content="North Shore Explorer - Your offline travel guide to Minnesota's North Shore">
     <meta name="theme-color" content="#0a4729">
     <title>North Shore Explorer | Travel Guide</title>
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIk5vcnRoIFNob3JlIEV4cGxvcmVyIiwKICAic2hvcnRfbmFtZSI6ICJOUyBFeHBsb3JlciIsCiAgInN0YXJ0X3VybCI6ICIuIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAidGhlbWVfY29sb3IiOiAiIzBhNDcyOSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiI2YwZjdmMiIsCiAgImljb25zIjogWwogICAgewogICAgICAic3JjIjogIi9pbWFnZXMvaWNvbi0xOTJ4MTkyLnBuZyIsCiAgICAgICJ0eXBlIjogImltYWdlL3BuZyIsCiAgICAgICJzaXplcyI6ICIxOTJ4MTkyIgogICAgfSwKICAgIHsKICAgICAgInNyYyI6ICIvaW1hZ2VzL2ljb24tNTEyeDUxMi5wbmciLAogICAgICAidHlwZSI6ICJpbWFnZS9wbmciLAogICAgICAic2l6ZXMiOiAiNTEyeDUxMiIKICAgIH0KICBdCn0=">
     <style>
         :root {
             --primary: #0a4729;
@@ -29,6 +29,7 @@
             background-color: var(--light);
             color: var(--text);
             line-height: 1.6;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%230a4729" opacity="0.05"/><path d="M0 50 Q 25 25, 50 50 T 100 50" fill="none" stroke="%23d4a017" stroke-width="0.5" opacity="0.1"/></svg>');
         }
 
         header {
@@ -86,6 +87,7 @@
             max-width: 1200px;
             margin: 2rem auto;
             padding: 0 1rem;
+            min-height: calc(100vh - 300px);
         }
 
         .section-title {
@@ -369,6 +371,24 @@
             font-weight: 600;
         }
 
+        .install-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+
         @media (max-width: 768px) {
             .header-container {
                 flex-direction: column;
@@ -395,6 +415,49 @@
 
         .section.active {
             display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 4px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+            animation: slideIn 0.3s, fadeOut 0.5s 2.5s forwards;
+        }
+
+        @keyframes slideIn {
+            from { bottom: -50px; opacity: 0; }
+            to { bottom: 20px; opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+
+        .itinerary-empty {
+            text-align: center;
+            padding: 2rem;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .itinerary-empty p {
+            margin-bottom: 1rem;
+            color: #666;
         }
     </style>
 </head>
@@ -430,49 +493,8 @@
                 </div>
             </div>
             
-            <div class="card-grid">
+            <div class="card-grid" id="poi-grid">
                 <!-- Nearby locations will be inserted here by JavaScript -->
-                <div class="card">
-                    <div class="card-img" style="background-image: url('https://images.unsplash.com/photo-1504851149312-7a075b496cc7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80');">
-                        <div class="card-tag">Scenic View</div>
-                    </div>
-                    <div class="card-content">
-                        <h3>Gooseberry Falls</h3>
-                        <p>Beautiful waterfalls with hiking trails and picnic areas. The Upper, Middle and Lower Falls each offer unique perspectives.</p>
-                        <div class="card-actions">
-                            <button class="btn btn-outline">More Info</button>
-                            <button class="btn btn-primary">Add to Itinerary</button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="card">
-                    <div class="card-img" style="background-image: url('https://images.unsplash.com/photo-1476820865390-c52aeebb9891?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80');">
-                        <div class="card-tag">Hiking</div>
-                    </div>
-                    <div class="card-content">
-                        <h3>Split Rock Lighthouse</h3>
-                        <p>Historic lighthouse with stunning Lake Superior views. Take a guided tour to learn about its maritime history.</p>
-                        <div class="card-actions">
-                            <button class="btn btn-outline">More Info</button>
-                            <button class="btn btn-primary">Add to Itinerary</button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="card">
-                    <div class="card-img" style="background-image: url('https://images.unsplash.com/photo-1506535995048-638aa1b62b77?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80');">
-                        <div class="card-tag">Park</div>
-                    </div>
-                    <div class="card-content">
-                        <h3>Tettegouche State Park</h3>
-                        <p>Features dramatic cliffs, inland lakes, and waterfalls. Popular for rock climbing and hiking along the Superior Hiking Trail.</p>
-                        <div class="card-actions">
-                            <button class="btn btn-outline">More Info</button>
-                            <button class="btn btn-primary">Add to Itinerary</button>
-                        </div>
-                    </div>
-                </div>
             </div>
         </section>
 
@@ -480,36 +502,8 @@
         <section id="itinerary" class="section">
             <h2 class="section-title">📋 My Travel Itinerary</h2>
             
-            <div class="card-grid">
-                <div class="card">
-                    <div class="card-img" style="background-image: url('https://images.unsplash.com/photo-1504851149312-7a075b496cc7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80');">
-                        <div class="card-tag">Added</div>
-                    </div>
-                    <div class="card-content">
-                        <h3>Gooseberry Falls</h3>
-                        <p><strong>Planned for:</strong> Day 1 - Morning</p>
-                        <p><strong>Notes:</strong> Bring picnic lunch and hiking shoes</p>
-                        <div class="card-actions">
-                            <button class="btn btn-outline">Edit</button>
-                            <button class="btn btn-primary">Remove</button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="card">
-                    <div class="card-img" style="background-image: url('https://images.unsplash.com/photo-1476820865390-c52aeebb9891?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80');">
-                        <div class="card-tag">Added</div>
-                    </div>
-                    <div class="card-content">
-                        <h3>Split Rock Lighthouse</h3>
-                        <p><strong>Planned for:</strong> Day 1 - Afternoon</p>
-                        <p><strong>Notes:</strong> Check tour times in advance</p>
-                        <div class="card-actions">
-                            <button class="btn btn-outline">Edit</button>
-                            <button class="btn btn-primary">Remove</button>
-                        </div>
-                    </div>
-                </div>
+            <div class="card-grid" id="itinerary-grid">
+                <!-- Itinerary items will be inserted here by JavaScript -->
             </div>
         </section>
 
@@ -519,53 +513,20 @@
             
             <div class="journal-container">
                 <h3>Share Your Experience</h3>
-                <form class="journal-form">
+                <form id="journal-form" class="journal-form">
                     <div class="form-group">
                         <label for="entry-title">Title</label>
-                        <input type="text" id="entry-title" placeholder="My North Shore Adventure">
+                        <input type="text" id="entry-title" placeholder="My North Shore Adventure" required>
                     </div>
                     <div class="form-group">
                         <label for="entry-content">Your Story</label>
-                        <textarea id="entry-content" placeholder="Share your experience on the North Shore..."></textarea>
+                        <textarea id="entry-content" placeholder="Share your experience on the North Shore..." required></textarea>
                     </div>
                     <button type="submit" class="btn btn-primary">Share with Community</button>
                 </form>
                 
-                <div class="journal-entries">
-                    <h3>Recent Community Stories</h3>
-                    
-                    <div class="journal-entry">
-                        <div class="entry-header">
-                            <div class="entry-title">Fall Colors at Their Peak</div>
-                            <div class="entry-date">Oct 12, 2023</div>
-                        </div>
-                        <div class="entry-content">
-                            The colors along Highway 61 this weekend were absolutely breathtaking! We hiked the Caribou Trail and the maples were fire red against the evergreens. Saw a moose near Lutsen!
-                        </div>
-                        <div class="entry-author">- Sarah M.</div>
-                    </div>
-                    
-                    <div class="journal-entry">
-                        <div class="entry-header">
-                            <div class="entry-title">Winter Waterfall Magic</div>
-                            <div class="entry-date">Feb 3, 2023</div>
-                        </div>
-                        <div class="entry-content">
-                            Visited Gooseberry Falls in winter for the first time. The frozen waterfalls are like something from a fairy tale! Crampons are a must - the trails were icy but worth it.
-                        </div>
-                        <div class="entry-author">- James K.</div>
-                    </div>
-                    
-                    <div class="journal-entry">
-                        <div class="entry-header">
-                            <div class="entry-title">Perfect Summer Getaway</div>
-                            <div class="entry-date">Aug 21, 2023</div>
-                        </div>
-                        <div class="entry-content">
-                            Spent a week camping at Tettegouche. The weather was perfect for hiking and swimming in Lake Superior (yes, we braved the cold water!). Don't miss the sunrise at Shovel Point.
-                        </div>
-                        <div class="entry-author">- The Nguyen Family</div>
-                    </div>
+                <div class="journal-entries" id="journal-entries">
+                    <!-- Journal entries will be inserted here by JavaScript -->
                 </div>
             </div>
         </section>
@@ -574,10 +535,9 @@
     <footer>
         <div class="footer-content">
             <div class="footer-links">
-                <a href="#">About</a>
-                <a href="#">Trail Map</a>
-                <a href="#">Contact</a>
-                <a href="#">Privacy Policy</a>
+                <a href="https://northshoreexplorermn.com" target="_blank">Official Website</a>
+                <a href="https://northshoreexplorermn.com/trail-map" target="_blank">Trail Map</a>
+                <a href="https://northshoreexplorermn.com/contact" target="_blank">Contact</a>
             </div>
             
             <div class="app-info">
@@ -591,22 +551,106 @@
         </div>
     </footer>
 
+    <button id="install-btn" class="install-btn hidden">📱 Install App</button>
+
     <script>
-        // PWA Installation and Service Worker
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('service-worker.js')
-                    .then(registration => {
-                        console.log('ServiceWorker registered: ', registration.scope);
-                    })
-                    .catch(error => {
-                        console.log('ServiceWorker registration failed: ', error);
-                    });
-            });
-        }
-        
-        // App functionality
+        // App data
+        const pointsOfInterest = [
+            {
+                id: 1,
+                name: "Gooseberry Falls",
+                description: "Beautiful waterfalls with hiking trails and picnic areas. The Upper, Middle and Lower Falls each offer unique perspectives.",
+                type: "waterfall",
+                tag: "Scenic View",
+                lat: 47.1467,
+                lng: -91.4665,
+                added: false
+            },
+            {
+                id: 2,
+                name: "Split Rock Lighthouse",
+                description: "Historic lighthouse with stunning Lake Superior views. Take a guided tour to learn about its maritime history.",
+                type: "landmark",
+                tag: "Historic Site",
+                lat: 47.1999,
+                lng: -91.3667,
+                added: false
+            },
+            {
+                id: 3,
+                name: "Tettegouche State Park",
+                description: "Features dramatic cliffs, inland lakes, and waterfalls. Popular for rock climbing and hiking along the Superior Hiking Trail.",
+                type: "park",
+                tag: "Hiking",
+                lat: 47.3193,
+                lng: -91.2395,
+                added: false
+            },
+            {
+                id: 4,
+                name: "Grand Marais Harbor",
+                description: "Charming harbor town with art galleries, shops, and restaurants. Don't miss the World's Best Donuts!",
+                type: "town",
+                tag: "Dining",
+                lat: 47.7475,
+                lng: -90.3344,
+                added: false
+            },
+            {
+                id: 5,
+                name: "Temperance River State Park",
+                description: "Known for its deep river gorge and waterfalls. The hiking trails offer spectacular views of the river carving through rock.",
+                type: "park",
+                tag: "Hiking",
+                lat: 47.5552,
+                lng: -90.8738,
+                added: false
+            },
+            {
+                id: 6,
+                name: "Lutsen Mountains",
+                description: "Popular ski resort in winter, and offers gondola rides and hiking in summer. The views from the top are breathtaking.",
+                type: "mountain",
+                tag: "Adventure",
+                lat: 47.6541,
+                lng: -90.6835,
+                added: false
+            }
+        ];
+
+        let journalEntries = [
+            {
+                id: 1,
+                title: "Fall Colors at Their Peak",
+                content: "The colors along Highway 61 this weekend were absolutely breathtaking! We hiked the Caribou Trail and the maples were fire red against the evergreens. Saw a moose near Lutsen!",
+                author: "Sarah M.",
+                date: "2023-10-12"
+            },
+            {
+                id: 2,
+                title: "Winter Waterfall Magic",
+                content: "Visited Gooseberry Falls in winter for the first time. The frozen waterfalls are like something from a fairy tale! Crampons are a must - the trails were icy but worth it.",
+                author: "James K.",
+                date: "2023-02-03"
+            },
+            {
+                id: 3,
+                title: "Perfect Summer Getaway",
+                content: "Spent a week camping at Tettegouche. The weather was perfect for hiking and swimming in Lake Superior (yes, we braved the cold water!). Don't miss the sunrise at Shovel Point.",
+                author: "The Nguyen Family",
+                date: "2023-08-21"
+            }
+        ];
+
+        let itineraryItems = [];
+
+        // Initialize the app
         document.addEventListener('DOMContentLoaded', () => {
+            // Render initial content
+            renderPOIs();
+            renderJournalEntries();
+            renderItinerary();
+            
             // Navigation
             const navLinks = document.querySelectorAll('.nav-link');
             const sections = document.querySelectorAll('.section');
@@ -638,26 +682,25 @@
                     navigator.geolocation.getCurrentPosition(
                         position => {
                             statusIndicator.classList.add('active');
-                            statusText.textContent = `Location found! Lat: ${position.coords.latitude.toFixed(4)}, Lon: ${position.coords.longitude.toFixed(4)}`;
-                            findNearbyPOIs(position.coords);
+                            statusText.textContent = `Location found! Showing nearby points of interest.`;
+                            
+                            // Simulate finding nearby points of interest
+                            setTimeout(() => {
+                                const nearbyPOIs = pointsOfInterest.slice(0, 3);
+                                renderPOIs(nearbyPOIs);
+                            }, 800);
                         },
                         error => {
-                            statusText.textContent = 'Location access denied. Using default locations.';
+                            statusText.textContent = 'Location access denied. Showing popular locations.';
                             console.error('Error getting location:', error);
-                            // Show default nearby points
-                            findNearbyPOIs(null);
+                            renderPOIs(pointsOfInterest.slice(0, 3));
                         }
                     );
                 } else {
                     statusText.textContent = 'Geolocation is not supported by your browser.';
+                    renderPOIs(pointsOfInterest.slice(0, 3));
                 }
             });
-            
-            // Simulate finding nearby points of interest
-            function findNearbyPOIs(coords) {
-                console.log('Finding nearby points of interest...');
-                // In a real app, this would query IndexedDB for nearby locations
-            }
             
             // Offline detection
             window.addEventListener('online', updateOnlineStatus);
@@ -673,116 +716,25 @@
                 } else {
                     onlineStatus.classList.remove('active');
                     onlineText.textContent = 'Offline';
+                    
                     // Show offline mode indicator
                     const offlineIndicator = document.createElement('div');
-                    offlineIndicator.className = 'offline-mode';
+                    offlineIndicator.className = 'toast';
                     offlineIndicator.textContent = 'Offline Mode - Using cached data';
-                    document.body.prepend(offlineIndicator);
+                    document.body.appendChild(offlineIndicator);
                     
                     // Set timeout to remove the indicator
                     setTimeout(() => {
                         offlineIndicator.remove();
-                    }, 5000);
+                    }, 3000);
                 }
             }
             
             // Initialize online status
             updateOnlineStatus();
             
-            // IndexedDB setup
-            let db;
-            const DB_NAME = 'NorthShoreExplorerDB';
-            const DB_VERSION = 1;
-            const POI_STORE = 'pointsOfInterest';
-            const ITINERARY_STORE = 'itinerary';
-            const JOURNAL_STORE = 'journal';
-            
-            function initDB() {
-                const request = indexedDB.open(DB_NAME, DB_VERSION);
-                
-                request.onerror = (event) => {
-                    console.error('Database error:', event.target.error);
-                };
-                
-                request.onupgradeneeded = (event) => {
-                    db = event.target.result;
-                    
-                    // Create object store for Points of Interest
-                    if (!db.objectStoreNames.contains(POI_STORE)) {
-                        const poiStore = db.createObjectStore(POI_STORE, { keyPath: 'id', autoIncrement: true });
-                        poiStore.createIndex('name', 'name', { unique: false });
-                        poiStore.createIndex('type', 'type', { unique: false });
-                    }
-                    
-                    // Create object store for Itinerary
-                    if (!db.objectStoreNames.contains(ITINERARY_STORE)) {
-                        const itineraryStore = db.createObjectStore(ITINERARY_STORE, { keyPath: 'id', autoIncrement: true });
-                        itineraryStore.createIndex('poiId', 'poiId', { unique: false });
-                    }
-                    
-                    // Create object store for Journal
-                    if (!db.objectStoreNames.contains(JOURNAL_STORE)) {
-                        const journalStore = db.createObjectStore(JOURNAL_STORE, { keyPath: 'id', autoIncrement: true });
-                        journalStore.createIndex('title', 'title', { unique: false });
-                        journalStore.createIndex('date', 'date', { unique: false });
-                    }
-                };
-                
-                request.onsuccess = (event) => {
-                    db = event.target.result;
-                    console.log('Database initialized');
-                    
-                    // Seed the database with sample data if empty
-                    seedDatabase();
-                };
-            }
-            
-            // Seed database with sample points of interest
-            function seedDatabase() {
-                const transaction = db.transaction([POI_STORE], 'readwrite');
-                const store = transaction.objectStore(POI_STORE);
-                const countRequest = store.count();
-                
-                countRequest.onsuccess = () => {
-                    if (countRequest.result === 0) {
-                        const samplePOIs = [
-                            {
-                                name: "Gooseberry Falls",
-                                description: "Beautiful waterfalls with hiking trails and picnic areas. The Upper, Middle and Lower Falls each offer unique perspectives.",
-                                type: "waterfall",
-                                lat: 47.1467,
-                                lng: -91.4665
-                            },
-                            {
-                                name: "Split Rock Lighthouse",
-                                description: "Historic lighthouse with stunning Lake Superior views. Take a guided tour to learn about its maritime history.",
-                                type: "landmark",
-                                lat: 47.1999,
-                                lng: -91.3667
-                            },
-                            {
-                                name: "Tettegouche State Park",
-                                description: "Features dramatic cliffs, inland lakes, and waterfalls. Popular for rock climbing and hiking along the Superior Hiking Trail.",
-                                type: "park",
-                                lat: 47.3193,
-                                lng: -91.2395
-                            }
-                        ];
-                        
-                        samplePOIs.forEach(poi => {
-                            store.add(poi);
-                        });
-                        
-                        console.log('Sample POIs added to database');
-                    }
-                };
-            }
-            
-            // Initialize the database when app starts
-            initDB();
-            
             // Journal form submission
-            const journalForm = document.querySelector('.journal-form');
+            const journalForm = document.getElementById('journal-form');
             journalForm.addEventListener('submit', (e) => {
                 e.preventDefault();
                 
@@ -792,28 +744,299 @@
                 if (title && content) {
                     saveJournalEntry(title, content);
                     journalForm.reset();
-                    alert('Journal entry saved successfully!');
-                } else {
-                    alert('Please fill in both title and content fields.');
+                    
+                    // Show success toast
+                    const toast = document.createElement('div');
+                    toast.className = 'toast';
+                    toast.textContent = 'Journal entry saved successfully!';
+                    document.body.appendChild(toast);
+                    
+                    setTimeout(() => {
+                        toast.remove();
+                    }, 3000);
                 }
             });
             
-            function saveJournalEntry(title, content) {
-                if (!db) return;
+            // Install button
+            let deferredPrompt;
+            const installBtn = document.getElementById('install-btn');
+            
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                installBtn.classList.remove('hidden');
+            });
+            
+            installBtn.addEventListener('click', async () => {
+                if (!deferredPrompt) return;
                 
-                const transaction = db.transaction([JOURNAL_STORE], 'readwrite');
-                const store = transaction.objectStore(JOURNAL_STORE);
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
                 
-                const entry = {
-                    title: title,
-                    content: content,
-                    date: new Date().toISOString(),
-                    author: "You"
-                };
+                if (outcome === 'accepted') {
+                    installBtn.classList.add('hidden');
+                }
                 
-                store.add(entry);
-            }
+                deferredPrompt = null;
+            });
         });
+        
+        // Render points of interest
+        function renderPOIs(pois = pointsOfInterest) {
+            const poiGrid = document.getElementById('poi-grid');
+            poiGrid.innerHTML = '';
+            
+            pois.forEach(poi => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <div class="card-img" style="background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.2)), url('https://picsum.photos/400/300?nature=${poi.id}');">
+                        <div class="card-tag">${poi.tag}</div>
+                    </div>
+                    <div class="card-content">
+                        <h3>${poi.name}</h3>
+                        <p>${poi.description}</p>
+                        <div class="card-actions">
+                            <button class="btn btn-outline poi-info" data-id="${poi.id}">More Info</button>
+                            <button class="btn ${poi.added ? 'btn-outline' : 'btn-primary'} add-to-itinerary" data-id="${poi.id}">
+                                ${poi.added ? 'Remove' : 'Add to Itinerary'}
+                            </button>
+                        </div>
+                    </div>
+                `;
+                poiGrid.appendChild(card);
+            });
+            
+            // Add event listeners to the buttons
+            document.querySelectorAll('.add-to-itinerary').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const id = parseInt(btn.getAttribute('data-id'));
+                    const poi = pointsOfInterest.find(p => p.id === id);
+                    
+                    if (poi) {
+                        poi.added = !poi.added;
+                        
+                        if (poi.added) {
+                            // Add to itinerary
+                            if (!itineraryItems.some(item => item.id === id)) {
+                                itineraryItems.push(poi);
+                            }
+                        } else {
+                            // Remove from itinerary
+                            itineraryItems = itineraryItems.filter(item => item.id !== id);
+                        }
+                        
+                        renderPOIs(pois);
+                        renderItinerary();
+                        
+                        // Show toast notification
+                        const toast = document.createElement('div');
+                        toast.className = 'toast';
+                        toast.textContent = poi.added ? 
+                            `Added ${poi.name} to your itinerary!` : 
+                            `Removed ${poi.name} from your itinerary.`;
+                        document.body.appendChild(toast);
+                        
+                        setTimeout(() => {
+                            toast.remove();
+                        }, 3000);
+                    }
+                });
+            });
+        }
+        
+        // Render journal entries
+        function renderJournalEntries() {
+            const journalEntriesContainer = document.getElementById('journal-entries');
+            journalEntriesContainer.innerHTML = '';
+            
+            if (journalEntries.length === 0) {
+                journalEntriesContainer.innerHTML = '<p>No journal entries yet. Be the first to share your experience!</p>';
+                return;
+            }
+            
+            journalEntries.forEach(entry => {
+                const entryEl = document.createElement('div');
+                entryEl.className = 'journal-entry';
+                entryEl.innerHTML = `
+                    <div class="entry-header">
+                        <div class="entry-title">${entry.title}</div>
+                        <div class="entry-date">${formatDate(entry.date)}</div>
+                    </div>
+                    <div class="entry-content">${entry.content}</div>
+                    <div class="entry-author">- ${entry.author}</div>
+                `;
+                journalEntriesContainer.appendChild(entryEl);
+            });
+        }
+        
+        // Render itinerary
+        function renderItinerary() {
+            const itineraryGrid = document.getElementById('itinerary-grid');
+            itineraryGrid.innerHTML = '';
+            
+            if (itineraryItems.length === 0) {
+                itineraryGrid.innerHTML = `
+                    <div class="itinerary-empty">
+                        <p>Your itinerary is empty</p>
+                        <p>Add some points of interest from the Explore tab!</p>
+                        <button class="btn btn-primary" id="explore-btn">Explore Nearby</button>
+                    </div>
+                `;
+                
+                document.getElementById('explore-btn').addEventListener('click', () => {
+                    document.querySelector('.nav-link[data-section="home"]').click();
+                });
+                return;
+            }
+            
+            itineraryItems.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <div class="card-img" style="background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.2)), url('https://picsum.photos/400/300?nature=${item.id}');">
+                        <div class="card-tag">Added</div>
+                    </div>
+                    <div class="card-content">
+                        <h3>${item.name}</h3>
+                        <p><strong>Type:</strong> ${item.type}</p>
+                        <p><strong>Notes:</strong> ${item.description.substring(0, 80)}...</p>
+                        <div class="card-actions">
+                            <button class="btn btn-outline poi-info" data-id="${item.id}">Details</button>
+                            <button class="btn btn-primary remove-itinerary" data-id="${item.id}">Remove</button>
+                        </div>
+                    </div>
+                `;
+                itineraryGrid.appendChild(card);
+            });
+            
+            // Add event listeners to remove buttons
+            document.querySelectorAll('.remove-itinerary').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const id = parseInt(btn.getAttribute('data-id'));
+                    const poi = pointsOfInterest.find(p => p.id === id);
+                    
+                    if (poi) {
+                        poi.added = false;
+                        itineraryItems = itineraryItems.filter(item => item.id !== id);
+                        renderItinerary();
+                        renderPOIs();
+                        
+                        // Show toast notification
+                        const toast = document.createElement('div');
+                        toast.className = 'toast';
+                        toast.textContent = `Removed ${poi.name} from your itinerary.`;
+                        document.body.appendChild(toast);
+                        
+                        setTimeout(() => {
+                            toast.remove();
+                        }, 3000);
+                    }
+                });
+            });
+        }
+        
+        // Save journal entry
+        function saveJournalEntry(title, content) {
+            const newEntry = {
+                id: journalEntries.length + 1,
+                title: title,
+                content: content,
+                author: "You",
+                date: new Date().toISOString().split('T')[0]
+            };
+            
+            journalEntries.unshift(newEntry);
+            renderJournalEntries();
+        }
+        
+        // Helper function to format date
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString(undefined, options);
+        }
+        
+        // IndexedDB setup
+        let db;
+        const DB_NAME = 'NorthShoreExplorerDB';
+        const DB_VERSION = 1;
+        const POI_STORE = 'pointsOfInterest';
+        const ITINERARY_STORE = 'itinerary';
+        const JOURNAL_STORE = 'journal';
+        
+        // Initialize the database when app starts
+        function initDB() {
+            const request = indexedDB.open(DB_NAME, DB_VERSION);
+            
+            request.onerror = (event) => {
+                console.error('Database error:', event.target.error);
+            };
+            
+            request.onupgradeneeded = (event) => {
+                db = event.target.result;
+                
+                // Create object store for Points of Interest
+                if (!db.objectStoreNames.contains(POI_STORE)) {
+                    const poiStore = db.createObjectStore(POI_STORE, { keyPath: 'id' });
+                    poiStore.createIndex('name', 'name', { unique: false });
+                }
+                
+                // Create object store for Itinerary
+                if (!db.objectStoreNames.contains(ITINERARY_STORE)) {
+                    db.createObjectStore(ITINERARY_STORE, { keyPath: 'id' });
+                }
+                
+                // Create object store for Journal
+                if (!db.objectStoreNames.contains(JOURNAL_STORE)) {
+                    const journalStore = db.createObjectStore(JOURNAL_STORE, { keyPath: 'id' });
+                    journalStore.createIndex('date', 'date', { unique: false });
+                }
+            };
+            
+            request.onsuccess = (event) => {
+                db = event.target.result;
+                console.log('Database initialized');
+                // Load data from IndexedDB in a real app
+            };
+        }
+        
+        // Initialize the database
+        initDB();
+        
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                // Register the service worker inline since we can't create a separate file
+                navigator.serviceWorker.register('data:application/javascript;base64,' + btoa(`
+                    self.addEventListener('install', event => {
+                        event.waitUntil(
+                            caches.open('north-shore-explorer-v1').then(cache => {
+                                return cache.addAll([
+                                    '/',
+                                    '/index.html',
+                                    '/styles.css',
+                                    '/app.js',
+                                    '/images/icon-192.png',
+                                    '/images/icon-512.png'
+                                ]);
+                            })
+                        );
+                    });
+                    
+                    self.addEventListener('fetch', event => {
+                        event.respondWith(
+                            caches.match(event.request).then(response => {
+                                return response || fetch(event.request);
+                            })
+                        );
+                    });
+                `)).then(registration => {
+                    console.log('Service Worker registered with scope:', registration.scope);
+                }).catch(error => {
+                    console.log('Service Worker registration failed:', error);
+                });
+            });
+        }
     </script>
 </body>
 </html>

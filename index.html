@@ -6,6 +6,7 @@
     <meta name="description" content="North Shore Explorer - Your offline travel guide to Minnesota's North Shore">
     <meta name="theme-color" content="#0a4729">
     <title>North Shore Explorer | Travel Guide</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIk5vcnRoIFNob3JlIEV4cGxvcmVyIiwKICAic2hvcnRfbmFtZSI6ICJOUyBFeHBsb3JlciIsCiAgInN0YXJ0X3VybCI6ICIuIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAidGhlbWVfY29sb3IiOiAiIzBhNDcyOSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiI2YwZjdmMiIsCiAgImljb25zIjogWwogICAgewogICAgICAic3JjIjogIi9pbWFnZXMvaWNvbi0xOTJ4MTkyLnBuZyIsCiAgICAgICJ0eXBlIjogImltYWdlL3BuZyIsCiAgICAgICJzaXplcyI6ICIxOTJ4MTkyIgogICAgfSwKICAgIHsKICAgICAgInNyYyI6ICIvaW1hZ2VzL2ljb24tNTEyeDUxMi5wbmciLAogICAgICAidHlwZSI6ICJpbWFnZS9wbmciLAogICAgICAic2l6ZXMiOiAiNTEyeDUxMiIKICAgIH0KICBdCn0=">
     <style>
         :root {
@@ -216,6 +217,9 @@
             font-weight: 600;
             cursor: pointer;
             transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .btn-primary {
@@ -235,6 +239,15 @@
 
         .btn-outline:hover {
             background-color: rgba(10, 71, 41, 0.1);
+        }
+
+        .btn-accent {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        .btn-accent:hover {
+            background-color: #b8860b;
         }
 
         .journal-container {
@@ -459,6 +472,27 @@
             margin-bottom: 1rem;
             color: #666;
         }
+
+        .route-btn-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .map-preview {
+            margin-top: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            height: 250px;
+            background-color: #e9f5ee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -481,11 +515,11 @@
     <main>
         <!-- Home Section -->
         <section id="home" class="section active">
-            <h2 class="section-title">📍 Nearby Points of Interest</h2>
+            <h2 class="section-title"><i class="fas fa-map-marker-alt"></i> Nearby Points of Interest</h2>
             
             <div class="location-info">
                 <button id="location-btn" class="location-btn">
-                    <span>🔍</span> Use My Current Location
+                    <i class="fas fa-location-arrow"></i> Use My Current Location
                 </button>
                 <div class="location-status">
                     <div id="status-indicator" class="status-indicator"></div>
@@ -500,7 +534,20 @@
 
         <!-- Itinerary Section -->
         <section id="itinerary" class="section">
-            <h2 class="section-title">📋 My Travel Itinerary</h2>
+            <h2 class="section-title"><i class="fas fa-route"></i> My Travel Itinerary</h2>
+            
+            <div class="route-btn-container">
+                <button id="route-btn" class="btn btn-accent">
+                    <i class="fas fa-map-marked-alt"></i> Plan Route in Maps
+                </button>
+                <button id="clear-btn" class="btn btn-outline">
+                    <i class="fas fa-trash-alt"></i> Clear Itinerary
+                </button>
+            </div>
+            
+            <div class="map-preview" id="map-preview">
+                <p>Your route will appear here after planning</p>
+            </div>
             
             <div class="card-grid" id="itinerary-grid">
                 <!-- Itinerary items will be inserted here by JavaScript -->
@@ -509,7 +556,7 @@
 
         <!-- Journal Section -->
         <section id="journal" class="section">
-            <h2 class="section-title">📝 Community Journal</h2>
+            <h2 class="section-title"><i class="fas fa-book"></i> Community Journal</h2>
             
             <div class="journal-container">
                 <h3>Share Your Experience</h3>
@@ -522,7 +569,9 @@
                         <label for="entry-content">Your Story</label>
                         <textarea id="entry-content" placeholder="Share your experience on the North Shore..." required></textarea>
                     </div>
-                    <button type="submit" class="btn btn-primary">Share with Community</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-share"></i> Share with Community
+                    </button>
                 </form>
                 
                 <div class="journal-entries" id="journal-entries">
@@ -551,7 +600,9 @@
         </div>
     </footer>
 
-    <button id="install-btn" class="install-btn hidden">📱 Install App</button>
+    <button id="install-btn" class="install-btn hidden">
+        <i class="fas fa-download"></i> Install App
+    </button>
 
     <script>
         // App data
@@ -779,6 +830,36 @@
                 
                 deferredPrompt = null;
             });
+            
+            // Clear itinerary button
+            const clearBtn = document.getElementById('clear-btn');
+            clearBtn.addEventListener('click', () => {
+                if (itineraryItems.length === 0) return;
+                
+                if (confirm('Are you sure you want to clear your itinerary?')) {
+                    // Reset added status for all POIs
+                    pointsOfInterest.forEach(poi => {
+                        poi.added = false;
+                    });
+                    
+                    // Clear itinerary items
+                    itineraryItems = [];
+                    
+                    // Update UI
+                    renderPOIs();
+                    renderItinerary();
+                    
+                    // Show toast notification
+                    const toast = document.createElement('div');
+                    toast.className = 'toast';
+                    toast.textContent = 'Itinerary cleared successfully';
+                    document.body.appendChild(toast);
+                    
+                    setTimeout(() => {
+                        toast.remove();
+                    }, 3000);
+                }
+            });
         });
         
         // Render points of interest
@@ -797,9 +878,12 @@
                         <h3>${poi.name}</h3>
                         <p>${poi.description}</p>
                         <div class="card-actions">
-                            <button class="btn btn-outline poi-info" data-id="${poi.id}">More Info</button>
+                            <button class="btn btn-outline poi-info" data-id="${poi.id}">
+                                <i class="fas fa-info-circle"></i> Details
+                            </button>
                             <button class="btn ${poi.added ? 'btn-outline' : 'btn-primary'} add-to-itinerary" data-id="${poi.id}">
-                                ${poi.added ? 'Remove' : 'Add to Itinerary'}
+                                <i class="fas ${poi.added ? 'fa-minus' : 'fa-plus'}"></i> 
+                                ${poi.added ? 'Remove' : 'Add'}
                             </button>
                         </div>
                     </div>
@@ -880,7 +964,9 @@
                     <div class="itinerary-empty">
                         <p>Your itinerary is empty</p>
                         <p>Add some points of interest from the Explore tab!</p>
-                        <button class="btn btn-primary" id="explore-btn">Explore Nearby</button>
+                        <button class="btn btn-primary" id="explore-btn">
+                            <i class="fas fa-compass"></i> Explore Nearby
+                        </button>
                     </div>
                 `;
                 
@@ -890,20 +976,24 @@
                 return;
             }
             
-            itineraryItems.forEach(item => {
+            itineraryItems.forEach((item, index) => {
                 const card = document.createElement('div');
                 card.className = 'card';
                 card.innerHTML = `
                     <div class="card-img" style="background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.2)), url('https://picsum.photos/400/300?nature=${item.id}');">
-                        <div class="card-tag">Added</div>
+                        <div class="card-tag">Stop ${index + 1}</div>
                     </div>
                     <div class="card-content">
                         <h3>${item.name}</h3>
                         <p><strong>Type:</strong> ${item.type}</p>
                         <p><strong>Notes:</strong> ${item.description.substring(0, 80)}...</p>
                         <div class="card-actions">
-                            <button class="btn btn-outline poi-info" data-id="${item.id}">Details</button>
-                            <button class="btn btn-primary remove-itinerary" data-id="${item.id}">Remove</button>
+                            <button class="btn btn-outline poi-info" data-id="${item.id}">
+                                <i class="fas fa-info-circle"></i> Details
+                            </button>
+                            <button class="btn btn-primary remove-itinerary" data-id="${item.id}">
+                                <i class="fas fa-trash"></i> Remove
+                            </button>
                         </div>
                     </div>
                 `;
@@ -1037,6 +1127,51 @@
                 });
             });
         }
+        
+        // Route planning functionality
+        const routeBtn = document.getElementById('route-btn');
+        routeBtn.addEventListener('click', () => {
+            if (itineraryItems.length === 0) {
+                alert('Your itinerary is empty. Add some places first!');
+                return;
+            }
+            
+            // Get coordinates from itinerary items
+            const coords = itineraryItems.map(item => `${item.lat},${item.lng}`);
+            
+            // Detect Apple devices
+            const isAppleDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+                                (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+            
+            if (isAppleDevice) {
+                // Apple Maps URL with coordinates
+                const appleParams = coords.map(coord => `daddr=${encodeURIComponent(coord)}`).join('&');
+                window.location.href = `https://maps.apple.com/?${appleParams}&dirflg=d`;
+            } else {
+                // Google Maps URL with coordinates
+                const destination = coords.pop();
+                const waypoints = coords.join('|');
+                
+                const googleParams = new URLSearchParams({
+                    api: '1',
+                    destination: destination,
+                    travelmode: 'driving',
+                    waypoints: waypoints
+                }).toString();
+                
+                window.open(`https://www.google.com/maps/dir/?${googleParams}`, '_blank');
+            }
+            
+            // Update map preview
+            const mapPreview = document.getElementById('map-preview');
+            mapPreview.innerHTML = `
+                <div style="text-align: center; padding: 20px;">
+                    <i class="fas fa-route" style="font-size: 3rem; color: var(--accent); margin-bottom: 15px;"></i>
+                    <h3>Route Planned Successfully!</h3>
+                    <p>Your map with ${itineraryItems.length} stops has been opened</p>
+                </div>
+            `;
+        });
     </script>
 </body>
 </html>

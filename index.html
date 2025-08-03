@@ -871,7 +871,7 @@
                 const card = document.createElement('div');
                 card.className = 'card';
                 card.innerHTML = `
-                    <div class="card-img" style="background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.2)), url('https://picsum.photos/400/300?nature=${poi.id}');">
+                    <div class="card-img" style="background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.2)), url('https://source.unsplash.com/random/400x300/?lake,${encodeURIComponent(poi.name)}&sig=${poi.id}');">
                         <div class="card-tag">${poi.tag}</div>
                     </div>
                     <div class="card-content">
@@ -980,7 +980,7 @@
                 const card = document.createElement('div');
                 card.className = 'card';
                 card.innerHTML = `
-                    <div class="card-img" style="background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.2)), url('https://picsum.photos/400/300?nature=${item.id}');">
+                    <div class="card-img" style="background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.2)), url('https://source.unsplash.com/random/400x300/?lake,${encodeURIComponent(item.name)}&sig=${item.id}');">
                         <div class="card-tag">Stop ${index + 1}</div>
                     </div>
                     <div class="card-content">

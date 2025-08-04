@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="North Shore Explorer - Your offline travel guide to Minnesota's North Shore">
     <meta name="theme-color" content="#0a4729">
-    <title>North Shore Explorer | Travel Guide</title>
+    <title>North Shore Explorer | Lake County Travel Guide</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -575,7 +575,7 @@
     <main>
         <!-- Home Section -->
         <section id="home" class="section active">
-            <h2 class="section-title"><i class="fas fa-map-marker-alt"></i> Points of Interest</h2>
+            <h2 class="section-title"><i class="fas fa-map-marker-alt"></i> Lake County Points of Interest</h2>
             
             <div class="location-info">
                 <div class="filter-container">
@@ -1301,6 +1301,19 @@
                 </div>
             `;
         });
+        
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('service-worker.js')
+                .then(registration => {
+                    console.log('Service Worker registered with scope:', registration.scope);
+                })
+                .catch(error => {
+                    console.log('Service Worker registration failed:', error);
+                });
+            });
+        }
     </script>
 </body>
 </html>

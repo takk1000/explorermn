@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="North Shore Explorer - Your offline travel guide to Minnesota's North Shore">
+    <meta name="theme-color" content="#0a4729">
+    <title>North Shore Explorer | Travel Guide</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0a4729;
+            --secondary: #1a6d3f;
+            --accent: #d4a017;
+            --light: #f0f7f2;
+            --dark: #06311d;
+            --text: #333;
+            --gray: #e0e0e0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--light);
+            color: var(--text);
+            line-height: 1.6;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%230a4729" opacity="0.05"/><path d="M0 50 Q 25 25, 50 50 T 100 50" fill="none" stroke="%23d4a017" stroke-width="0.5" opacity="0.1"/></svg>');
+        }
+
+        header {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            font-size: 1.8rem;
+        }
+
+        .logo h1 {
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        nav a.active, nav a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            min-height: calc(100vh - 300px);
+        }
+
+        .section-title {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .location-info {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .location-btn {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.3s;
+            max-width: 300px;
+        }
+
+        .location-btn:hover {
+            background-color: #b8860b;
+        }
+
+        .location-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #ccc;
+        }
+
+        .status-indicator.active {
+            background-color: #28a745;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-img {
+            height: 180px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        .card-tag {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: var(--accent);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        .card h3 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .card p {
+            color: #555;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .place-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .place-info span {
+            background: rgba(10, 71, 41, 0.1);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        .card-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 4px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--dark);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background-color: rgba(10, 71, 41, 0.1);
+        }
+
+        .btn-accent {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        .btn-accent:hover {
+            background-color: #b8860b;
+        }
+
+        .journal-container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .journal-form {
+            display: grid;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .form-group input,
+        .form-group textarea {
+            padding: 0.8rem;
+            border: 1px solid var(--gray);
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .journal-entries {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .journal-entry {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 1.5rem;
+            border-left: 4px solid var(--accent);
+        }
+
+        .entry-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .entry-title {
+            font-size: 1.2rem;
+            color: var(--primary);
+        }
+
+        .entry-date {
+            color: #777;
+            font-size: 0.9rem;
+        }
+
+        .entry-content {
+            color: #555;
+            margin-bottom: 1rem;
+        }
+
+        .entry-author {
+            color: var(--secondary);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 2rem 1rem;
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+
+        .app-info {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .offline-mode {
+            background-color: #ffc107;
+            color: #333;
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .install-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            nav ul {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 4px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+            animation: slideIn 0.3s, fadeOut 0.5s 2.5s forwards;
+        }
+
+        @keyframes slideIn {
+            from { bottom: -50px; opacity: 0; }
+            to { bottom: 20px; opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+
+        .itinerary-empty {
+            text-align: center;
+            padding: 2rem;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .itinerary-empty p {
+            margin-bottom: 1rem;
+            color: #666;
+        }
+
+        .route-btn-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .map-preview {
+            margin-top: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            height: 250px;
+            background-color: #e9f5ee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-weight: bold;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            font-size: 1.2rem;
+            color: var(--primary);
+        }
+        
+        .loading-spinner {
+            border: 4px solid rgba(10, 71, 41, 0.2);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .filter-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .filter-btn {
+            background-color: white;
+            border: 1px solid var(--gray);
+            border-radius: 20px;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .filter-btn.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                <div class="logo-icon">🌲</div>
+                <h1>North Shore Explorer</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#home" class="nav-link active" data-section="home">Explore</a></li>
+                    <li><a href="#itinerary" class="nav-link" data-section="itinerary">My Itinerary</a></li>
+                    <li><a href="#journal" class="nav-link" data-section="journal">Community Journal</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- Home Section -->
+        <section id="home" class="section active">
+            <h2 class="section-title"><i class="fas fa-map-marker-alt"></i> Points of Interest</h2>
+            
+            <div class="location-info">
+                <div class="filter-container">
+                    <button class="filter-btn active" data-category="all">All Places</button>
+                    <button class="filter-btn" data-category="natural">Natural</button>
+                    <button class="filter-btn" data-category="business">Businesses</button>
+                    <button class="filter-btn" data-category="park">Parks</button>
+                    <button class="filter-btn" data-category="historic">Historic</button>
+                </div>
+                
+                <button id="location-btn" class="location-btn">
+                    <i class="fas fa-location-arrow"></i> Use My Current Location
+                </button>
+                <div class="location-status">
+                    <div id="status-indicator" class="status-indicator"></div>
+                    <span id="status-text">Location access not requested</span>
+                </div>
+            </div>
+            
+            <div class="card-grid" id="poi-grid">
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <p>Loading places of interest...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Itinerary Section -->
+        <section id="itinerary" class="section">
+            <h2 class="section-title"><i class="fas fa-route"></i> My Travel Itinerary</h2>
+            
+            <div class="route-btn-container">
+                <button id="route-btn" class="btn btn-accent">
+                    <i class="fas fa-map-marked-alt"></i> Plan Route in Maps
+                </button>
+                <button id="clear-btn" class="btn btn-outline">
+                    <i class="fas fa-trash-alt"></i> Clear Itinerary
+                </button>
+            </div>
+            
+            <div class="map-preview" id="map-preview">
+                <p>Your route will appear here after planning</p>
+            </div>
+            
+            <div class="card-grid" id="itinerary-grid">
+                <div class="itinerary-empty">
+                    <p>Your itinerary is empty</p>
+                    <p>Add some points of interest from the Explore tab!</p>
+                    <button class="btn btn-primary" id="explore-btn">
+                        <i class="fas fa-compass"></i> Explore Nearby
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Journal Section -->
+        <section id="journal" class="section">
+            <h2 class="section-title"><i class="fas fa-book"></i> Community Journal</h2>
+            
+            <div class="journal-container">
+                <h3>Share Your Experience</h3>
+                <form id="journal-form" class="journal-form">
+                    <div class="form-group">
+                        <label for="entry-title">Title</label>
+                        <input type="text" id="entry-title" placeholder="My North Shore Adventure" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="entry-content">Your Story</label>
+                        <textarea id="entry-content" placeholder="Share your experience on the North Shore..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-share"></i> Share with Community
+                    </button>
+                </form>
+                
+                <div class="journal-entries" id="journal-entries">
+                    <!-- Journal entries will be inserted here by JavaScript -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="https://northshoreexplorermn.com" target="_blank">Official Website</a>
+                <a href="https://northshoreexplorermn.com/trail-map" target="_blank">Trail Map</a>
+                <a href="https://northshoreexplorermn.com/contact" target="_blank">Contact</a>
+            </div>
+            
+            <div class="app-info">
+                <div class="connection-status">
+                    <span>Connection Status:</span>
+                    <div id="online-status" class="status-indicator active"></div>
+                    <span id="online-text">Online</span>
+                </div>
+                <p>North Shore Explorer PWA &copy; 2023 | Offline-Ready Travel Guide</p>
+            </div>
+        </div>
+    </footer>
+
+    <button id="install-btn" class="install-btn hidden">
+        <i class="fas fa-download"></i> Install App
+    </button>
+
+    <script>
+        // App data
+        const SPREADSHEET_URL = "https://docs.google.com/spreadsheets/d/10RdjNf5Cmm-Yr3hHrZaGqeriQh_hRfRGuOxyKDGL83E/export?format=csv";
+        
+        let pointsOfInterest = [];
+        let journalEntries = [];
+        let itineraryItems = [];
+        let db;
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize database
+            initDB().then(() => {
+                // Check online status
+                if (navigator.onLine) {
+                    // Try to fetch new data
+                    fetchPOIData();
+                } else {
+                    // Load from IndexedDB
+                    loadPOIDataFromIDB();
+                }
+            });
+            
+            // Navigation
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('.section');
+            
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetSection = link.getAttribute('data-section');
+                    
+                    // Update active nav link
+                    navLinks.forEach(navLink => navLink.classList.remove('active'));
+                    link.classList.add('active');
+                    
+                    // Show target section
+                    sections.forEach(section => section.classList.remove('active'));
+                    document.getElementById(targetSection).classList.add('active');
+                });
+            });
+            
+            // Location access
+            const locationBtn = document.getElementById('location-btn');
+            const statusIndicator = document.getElementById('status-indicator');
+            const statusText = document.getElementById('status-text');
+            
+            locationBtn.addEventListener('click', () => {
+                if (navigator.geolocation) {
+                    statusText.textContent = 'Locating...';
+                    
+                    navigator.geolocation.getCurrentPosition(
+                        position => {
+                            statusIndicator.classList.add('active');
+                            statusText.textContent = `Location found! Showing nearby points of interest.`;
+                            
+                            // Simulate finding nearby points of interest
+                            setTimeout(() => {
+                                // For demo, we'll just show all places
+                                renderPOIs();
+                            }, 800);
+                        },
+                        error => {
+                            statusText.textContent = 'Location access denied. Showing all locations.';
+                            console.error('Error getting location:', error);
+                            renderPOIs();
+                        }
+                    );
+                } else {
+                    statusText.textContent = 'Geolocation is not supported by your browser.';
+                    renderPOIs();
+                }
+            });
+            
+            // Filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    const category = btn.getAttribute('data-category');
+                    renderPOIs(category);
+                });
+            });
+            
+            // Offline detection
+            window.addEventListener('online', updateOnlineStatus);
+            window.addEventListener('offline', updateOnlineStatus);
+            
+            function updateOnlineStatus() {
+                const onlineStatus = document.getElementById('online-status');
+                const onlineText = document.getElementById('online-text');
+                
+                if (navigator.onLine) {
+                    onlineStatus.classList.add('active');
+                    onlineText.textContent = 'Online';
+                } else {
+                    onlineStatus.classList.remove('active');
+                    onlineText.textContent = 'Offline';
+                    
+                    // Show offline mode indicator
+                    const offlineIndicator = document.createElement('div');
+                    offlineIndicator.className = 'toast';
+                    offlineIndicator.textContent = 'Offline Mode - Using cached data';
+                    document.body.appendChild(offlineIndicator);
+                    
+                    // Set timeout to remove the indicator
+                    setTimeout(() => {
+                        offlineIndicator.remove();
+                    }, 3000);
+                }
+            }
+            
+            // Initialize online status
+            updateOnlineStatus();
+            
+            // Journal form submission
+            const journalForm = document.getElementById('journal-form');
+            journalForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                const title = document.getElementById('entry-title').value;
+                const content = document.getElementById('entry-content').value;
+                
+                if (title && content) {
+                    saveJournalEntry(title, content);
+                    journalForm.reset();
+                    
+                    // Show success toast
+                    const toast = document.createElement('div');
+                    toast.className = 'toast';
+                    toast.textContent = 'Journal entry saved successfully!';
+                    document.body.appendChild(toast);
+                    
+                    setTimeout(() => {
+                        toast.remove();
+                    }, 3000);
+                }
+            });
+            
+            // Install button
+            let deferredPrompt;
+            const installBtn = document.getElementById('install-btn');
+            
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                installBtn.classList.remove('hidden');
+            });
+            
+            installBtn.addEventListener('click', async () => {
+                if (!deferredPrompt) return;
+                
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                
+                if (outcome === 'accepted') {
+                    installBtn.classList.add('hidden');
+                }
+                
+                deferredPrompt = null;
+            });
+            
+            // Clear itinerary button
+            const clearBtn = document.getElementById('clear-btn');
+            clearBtn.addEventListener('click', () => {
+                if (itineraryItems.length === 0) return;
+                
+                if (confirm('Are you sure you want to clear your itinerary?')) {
+                    // Reset added status for all POIs
+                    pointsOfInterest.forEach(poi => {
+                        poi.added = false;
+                    });
+                    
+                    // Clear itinerary items
+                    itineraryItems = [];
+                    
+                    // Update UI
+                    renderPOIs();
+                    renderItinerary();
+                    
+                    // Show toast notification
+                    const toast = document.createElement('div');
+                    toast.className = 'toast';
+                    toast.textContent = 'Itinerary cleared successfully';
+                    document.body.appendChild(toast);
+                    
+                    setTimeout(() => {
+                        toast.remove();
+                    }, 3000);
+                }
+            });
+        });
+        
+        // Initialize IndexedDB
+        function initDB() {
+            return new Promise((resolve, reject) => {
+                const DB_NAME = 'NorthShoreExplorerDB';
+                const DB_VERSION = 2;
+                
+                const request = indexedDB.open(DB_NAME, DB_VERSION);
+                
+                request.onerror = (event) => {
+                    console.error('Database error:', event.target.error);
+                    reject(event.target.error);
+                };
+                
+                request.onupgradeneeded = (event) => {
+                    db = event.target.result;
+                    
+                    // Create object store for Points of Interest
+                    if (!db.objectStoreNames.contains('poiStore')) {
+                        const poiStore = db.createObjectStore('poiStore', { keyPath: 'id' });
+                        poiStore.createIndex('name', 'name', { unique: false });
+                        poiStore.createIndex('category', 'category', { unique: false });
+                    }
+                    
+                    // Create object store for Journal
+                    if (!db.objectStoreNames.contains('journalStore')) {
+                        const journalStore = db.createObjectStore('journalStore', { keyPath: 'id' });
+                        journalStore.createIndex('date', 'date', { unique: false });
+                    }
+                    
+                    // Create object store for Itinerary
+                    if (!db.objectStoreNames.contains('itineraryStore')) {
+                        db.createObjectStore('itineraryStore', { keyPath: 'id' });
+                    }
+                };
+                
+                request.onsuccess = (event) => {
+                    db = event.target.result;
+                    console.log('Database initialized');
+                    resolve();
+                };
+            });
+        }
+        
+        // Fetch POI data from spreadsheet
+        async function fetchPOIData() {
+            try {
+                const response = await fetch(SPREADSHEET_URL);
+                if (!response.ok) throw new Error('Network response was not ok');
+                
+                const csvData = await response.text();
+                const parsedData = parseCSV(csvData);
+                
+                // Store in IndexedDB
+                storePOIsInIDB(parsedData);
+                
+                // Update app data
+                pointsOfInterest = parsedData;
+                
+                // Render the points
+                renderPOIs();
+            } catch (error) {
+                console.error('Error fetching POI data:', error);
+                
+                // If fetch fails, try loading from IDB
+                loadPOIDataFromIDB();
+            }
+        }
+        
+        // Parse CSV data
+        function parseCSV(csv) {
+            const lines = csv.split('\n');
+            const headers = lines[0].split(',').map(h => h.trim());
+            
+            const results = [];
+            
+            for (let i = 1; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (!line) continue;
+                
+                const values = line.split(',');
+                const obj = {};
+                
+                for (let j = 0; j < headers.length; j++) {
+                    let value = values[j] ? values[j].trim() : '';
+                    
+                    // Handle numeric values
+                    if (headers[j] === 'id' || headers[j] === 'lat' || headers[j] === 'lng') {
+                        value = parseFloat(value);
+                    }
+                    
+                    // Handle boolean values
+                    if (headers[j] === 'isBusiness') {
+                        value = value.toLowerCase() === 'true';
+                    }
+                    
+                    obj[headers[j]] = value;
+                }
+                
+                results.push(obj);
+            }
+            
+            return results;
+        }
+        
+        // Store POIs in IndexedDB
+        function storePOIsInIDB(pois) {
+            const transaction = db.transaction(['poiStore'], 'readwrite');
+            const store = transaction.objectStore('poiStore');
+            
+            // Clear existing data
+            store.clear();
+            
+            // Add new data
+            pois.forEach(poi => {
+                store.add(poi);
+            });
+            
+            transaction.oncomplete = () => {
+                console.log('POI data stored in IndexedDB');
+            };
+        }
+        
+        // Load POI data from IndexedDB
+        function loadPOIDataFromIDB() {
+            const transaction = db.transaction(['poiStore'], 'readonly');
+            const store = transaction.objectStore('poiStore');
+            const request = store.getAll();
+            
+            request.onsuccess = (event) => {
+                pointsOfInterest = event.target.result;
+                renderPOIs();
+                
+                // Show offline message if no data
+                if (pointsOfInterest.length === 0) {
+                    const toast = document.createElement('div');
+                    toast.className = 'toast';
+                    toast.textContent = 'No offline data available. Connect to internet to load places.';
+                    document.body.appendChild(toast);
+                    
+                    setTimeout(() => {
+                        toast.remove();
+                    }, 5000);
+                }
+            };
+            
+            request.onerror = (event) => {
+                console.error('Error loading POI data from IDB:', event.target.error);
+            };
+        }
+        
+        // Render points of interest
+        function renderPOIs(category = 'all') {
+            const poiGrid = document.getElementById('poi-grid');
+            
+            // If data not loaded yet, show loading indicator
+            if (pointsOfInterest.length === 0) {
+                poiGrid.innerHTML = `
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                        <p>Loading places of interest...</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            poiGrid.innerHTML = '';
+            
+            // Filter by category if needed
+            const filteredPOIs = category === 'all' 
+                ? pointsOfInterest 
+                : pointsOfInterest.filter(poi => {
+                    if (category === 'natural') return !poi.isBusiness;
+                    if (category === 'business') return poi.isBusiness;
+                    return poi.category === category;
+                });
+            
+            if (filteredPOIs.length === 0) {
+                poiGrid.innerHTML = '<p class="loading">No places found in this category.</p>';
+                return;
+            }
+            
+            filteredPOIs.forEach(poi => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                
+                // Determine tag based on category
+                let tagText = poi.category;
+                if (tagText === 'state_park') tagText = 'State Park';
+                if (tagText === 'hiking_trail') tagText = 'Hiking Trail';
+                if (tagText === 'scenic_view') tagText = 'Scenic View';
+                if (tagText === 'historic_site') tagText = 'Historic Site';
+                
+                card.innerHTML = `
+                    <div class="card-img" style="background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.2)), url('https://source.unsplash.com/random/400x300/?lake,${encodeURIComponent(poi.name)}&sig=${poi.id}');">
+                        <div class="card-tag">${tagText}</div>
+                    </div>
+                    <div class="card-content">
+                        <h3>${poi.name}</h3>
+                        <p>${poi.description}</p>
+                        
+                        <div class="place-info">
+                            <span>${poi.township}</span>
+                            <span>${poi.county} County</span>
+                            <span>${poi.isBusiness ? 'Business' : 'Natural'}</span>
+                        </div>
+                        
+                        <div class="card-actions">
+                            <button class="btn btn-outline poi-info" data-id="${poi.id}">
+                                <i class="fas fa-info-circle"></i> Details
+                            </button>
+                            <button class="btn ${poi.added ? 'btn-outline' : 'btn-primary'} add-to-itinerary" data-id="${poi.id}">
+                                <i class="fas ${poi.added ? 'fa-minus' : 'fa-plus'}"></i> 
+                                ${poi.added ? 'Remove' : 'Add'}
+                            </button>
+                        </div>
+                    </div>
+                `;
+                poiGrid.appendChild(card);
+            });
+            
+            // Add event listeners to the buttons
+            document.querySelectorAll('.add-to-itinerary').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const id = parseInt(btn.getAttribute('data-id'));
+                    const poi = pointsOfInterest.find(p => p.id === id);
+                    
+                    if (poi) {
+                        poi.added = !poi.added;
+                        
+                        if (poi.added) {
+                            // Add to itinerary
+                            if (!itineraryItems.some(item => item.id === id)) {
+                                itineraryItems.push(poi);
+                            }
+                        } else {
+                            // Remove from itinerary
+                            itineraryItems = itineraryItems.filter(item => item.id !== id);
+                        }
+                        
+                        renderPOIs(category);
+                        renderItinerary();
+                        
+                        // Show toast notification
+                        const toast = document.createElement('div');
+                        toast.className = 'toast';
+                        toast.textContent = poi.added ? 
+                            `Added ${poi.name} to your itinerary!` : 
+                            `Removed ${poi.name} from your itinerary.`;
+                        document.body.appendChild(toast);
+                        
+                        setTimeout(() => {
+                            toast.remove();
+                        }, 3000);
+                    }
+                });
+            });
+        }
+        
+        // Render itinerary
+        function renderItinerary() {
+            const itineraryGrid = document.getElementById('itinerary-grid');
+            
+            if (itineraryItems.length === 0) {
+                itineraryGrid.innerHTML = `
+                    <div class="itinerary-empty">
+                        <p>Your itinerary is empty</p>
+                        <p>Add some points of interest from the Explore tab!</p>
+                        <button class="btn btn-primary" id="explore-btn">
+                            <i class="fas fa-compass"></i> Explore Nearby
+                        </button>
+                    </div>
+                `;
+                
+                document.getElementById('explore-btn').addEventListener('click', () => {
+                    document.querySelector('.nav-link[data-section="home"]').click();
+                });
+                return;
+            }
+            
+            itineraryGrid.innerHTML = '';
+            
+            itineraryItems.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                
+                // Determine tag based on category
+                let tagText = item.category;
+                if (tagText === 'state_park') tagText = 'State Park';
+                if (tagText === 'hiking_trail') tagText = 'Hiking Trail';
+                
+                card.innerHTML = `
+                    <div class="card-img" style="background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.2)), url('https://source.unsplash.com/random/400x300/?lake,${encodeURIComponent(item.name)}&sig=${item.id}');">
+                        <div class="card-tag">Stop ${index + 1}</div>
+                    </div>
+                    <div class="card-content">
+                        <h3>${item.name}</h3>
+                        <p><strong>Type:</strong> ${tagText}</p>
+                        <p><strong>Location:</strong> ${item.township}, ${item.county} County</p>
+                        <p>${item.description.substring(0, 80)}...</p>
+                        <div class="card-actions">
+                            <button class="btn btn-outline poi-info" data-id="${item.id}">
+                                <i class="fas fa-info-circle"></i> Details
+                            </button>
+                            <button class="btn btn-primary remove-itinerary" data-id="${item.id}">
+                                <i class="fas fa-trash"></i> Remove
+                            </button>
+                        </div>
+                    </div>
+                `;
+                itineraryGrid.appendChild(card);
+            });
+            
+            // Add event listeners to remove buttons
+            document.querySelectorAll('.remove-itinerary').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const id = parseInt(btn.getAttribute('data-id'));
+                    const poi = pointsOfInterest.find(p => p.id === id);
+                    
+                    if (poi) {
+                        poi.added = false;
+                        itineraryItems = itineraryItems.filter(item => item.id !== id);
+                        renderItinerary();
+                        renderPOIs();
+                        
+                        // Show toast notification
+                        const toast = document.createElement('div');
+                        toast.className = 'toast';
+                        toast.textContent = `Removed ${poi.name} from your itinerary.`;
+                        document.body.appendChild(toast);
+                        
+                        setTimeout(() => {
+                            toast.remove();
+                        }, 3000);
+                    }
+                });
+            });
+        }
+        
+        // Save journal entry
+        function saveJournalEntry(title, content) {
+            const newEntry = {
+                id: Date.now(),
+                title: title,
+                content: content,
+                author: "You",
+                date: new Date().toISOString().split('T')[0]
+            };
+            
+            journalEntries.unshift(newEntry);
+            renderJournalEntries();
+        }
+        
+        // Render journal entries
+        function renderJournalEntries() {
+            const journalEntriesContainer = document.getElementById('journal-entries');
+            journalEntriesContainer.innerHTML = '';
+            
+            if (journalEntries.length === 0) {
+                journalEntriesContainer.innerHTML = '<p>No journal entries yet. Be the first to share your experience!</p>';
+                return;
+            }
+            
+            journalEntries.forEach(entry => {
+                const entryEl = document.createElement('div');
+                entryEl.className = 'journal-entry';
+                entryEl.innerHTML = `
+                    <div class="entry-header">
+                        <div class="entry-title">${entry.title}</div>
+                        <div class="entry-date">${formatDate(entry.date)}</div>
+                    </div>
+                    <div class="entry-content">${entry.content}</div>
+                    <div class="entry-author">- ${entry.author}</div>
+                `;
+                journalEntriesContainer.appendChild(entryEl);
+            });
+        }
+        
+        // Helper function to format date
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString(undefined, options);
+        }
+        
+        // Route planning functionality
+        const routeBtn = document.getElementById('route-btn');
+        routeBtn.addEventListener('click', () => {
+            if (itineraryItems.length === 0) {
+                alert('Your itinerary is empty. Add some places first!');
+                return;
+            }
+            
+            // Get coordinates from itinerary items
+            const coords = itineraryItems.map(item => `${item.lat},${item.lng}`);
+            
+            // Detect Apple devices
+            const isAppleDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+                                (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+            
+            if (isAppleDevice) {
+                // Apple Maps URL with coordinates
+                const appleParams = coords.map(coord => `daddr=${encodeURIComponent(coord)}`).join('&');
+                window.location.href = `https://maps.apple.com/?${appleParams}&dirflg=d`;
+            } else {
+                // Google Maps URL with coordinates
+                const destination = coords.pop();
+                const waypoints = coords.join('|');
+                
+                const googleParams = new URLSearchParams({
+                    api: '1',
+                    destination: destination,
+                    travelmode: 'driving',
+                    waypoints: waypoints
+                }).toString();
+                
+                window.open(`https://www.google.com/maps/dir/?${googleParams}`, '_blank');
+            }
+            
+            // Update map preview
+            const mapPreview = document.getElementById('map-preview');
+            mapPreview.innerHTML = `
+                <div style="text-align: center; padding: 20px;">
+                    <i class="fas fa-route" style="font-size: 3rem; color: var(--accent); margin-bottom: 15px;"></i>
+                    <h3>Route Planned Successfully!</h3>
+                    <p>Your map with ${itineraryItems.length} stops has been opened</p>
+                </div>
+            `;
+        });
+    </script>
+</body>
+</html>
